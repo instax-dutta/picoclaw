@@ -105,6 +105,7 @@ type ProvidersConfig struct {
 	Zhipu      ProviderConfig `json:"zhipu"`
 	VLLM       ProviderConfig `json:"vllm"`
 	Gemini     ProviderConfig `json:"gemini"`
+	Nvidia     ProviderConfig `json:"nvidia"`
 }
 
 type ProviderConfig struct {
@@ -125,6 +126,12 @@ type WebSearchConfig struct {
 
 type WebToolsConfig struct {
 	Search WebSearchConfig `json:"search"`
+	Ollama OllamaConfig   `json:"ollama"`
+}
+
+type OllamaConfig struct {
+	APIKey     string `json:"api_key" env:"PICOCLAW_TOOLS_WEB_OLLAMA_API_KEY"`
+	MaxResults int    `json:"max_results" env:"PICOCLAW_TOOLS_WEB_OLLAMA_MAX_RESULTS"`
 }
 
 type ToolsConfig struct {
@@ -200,6 +207,7 @@ func DefaultConfig() *Config {
 			Zhipu:      ProviderConfig{},
 			VLLM:       ProviderConfig{},
 			Gemini:     ProviderConfig{},
+			Nvidia:     ProviderConfig{},
 		},
 		Gateway: GatewayConfig{
 			Host: "0.0.0.0",
@@ -208,6 +216,10 @@ func DefaultConfig() *Config {
 		Tools: ToolsConfig{
 			Web: WebToolsConfig{
 				Search: WebSearchConfig{
+					APIKey:     "",
+					MaxResults: 5,
+				},
+				Ollama: OllamaConfig{
 					APIKey:     "",
 					MaxResults: 5,
 				},
@@ -285,6 +297,9 @@ func (c *Config) GetAPIKey() string {
 	if c.Providers.VLLM.APIKey != "" {
 		return c.Providers.VLLM.APIKey
 	}
+	if c.Providers.Nvidia.APIKey != "" {
+		return c.Providers.Nvidia.APIKey
+	}
 	return ""
 }
 
@@ -302,6 +317,12 @@ func (c *Config) GetAPIBase() string {
 	}
 	if c.Providers.VLLM.APIKey != "" && c.Providers.VLLM.APIBase != "" {
 		return c.Providers.VLLM.APIBase
+	}
+	if c.Providers.Nvidia.APIKey != "" {
+		if c.Providers.Nvidia.APIBase != "" {
+			return c.Providers.Nvidia.APIBase
+		}
+		return "https://integrate.api.nvidia.com/v1"
 	}
 	return ""
 }
