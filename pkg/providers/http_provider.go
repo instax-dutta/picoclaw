@@ -54,6 +54,7 @@ func (p *HTTPProvider) Chat(ctx context.Context, messages []Message, tools []Too
 	}
 
 	// Strip provider prefix from model name (e.g., moonshot/kimi-k2.5 -> kimi-k2.5, groq/openai/gpt-oss-120b -> openai/gpt-oss-120b, ollama/qwen2.5:14b -> qwen2.5:14b)
+	// This helps in correctly identifying the model for providers like NVIDIA NIM.
 	if idx := strings.Index(model, "/"); idx != -1 {
 		prefix := model[:idx]
 		// Don't strip if it's the required namespace for NVIDIA NIM (like moonshotai/)
