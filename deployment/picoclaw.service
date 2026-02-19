@@ -1,0 +1,15 @@
+[Unit]
+Description=PicoClaw AI Agent
+After=network.target ollama.service
+
+[Service]
+Type=simple
+User=racer
+WorkingDirectory=/home/racer/picoclaw
+ExecStart=/home/racer/picoclaw/picoclaw
+Restart=always
+RestartSec=10
+EnvironmentFile=/home/racer/picoclaw/.env
+
+[Install]
+WantedBy=multi-user.target
