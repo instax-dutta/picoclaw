@@ -56,7 +56,8 @@ func (p *HTTPProvider) Chat(ctx context.Context, messages []Message, tools []Too
 	// Strip provider prefix from model name (e.g., moonshot/kimi-k2.5 -> kimi-k2.5, groq/openai/gpt-oss-120b -> openai/gpt-oss-120b, ollama/qwen2.5:14b -> qwen2.5:14b)
 	if idx := strings.Index(model, "/"); idx != -1 {
 		prefix := model[:idx]
-		if prefix == "moonshot" || prefix == "nvidia" || prefix == "groq" || prefix == "ollama" {
+		// Don't strip if it's the required namespace for NVIDIA NIM (like moonshotai/)
+		if prefix == "moonshot" || (prefix == "nvidia" && !strings.Contains(model, "moonshotai/")) || prefix == "groq" || prefix == "ollama" {
 			model = model[idx+1:]
 		}
 	}
@@ -324,6 +325,14 @@ func CreateProvider(cfg *config.Config) (LLMProvider, error) {
 					model = "deepseek-chat"
 				}
 			}
+		case "nvidia":
+			if cfg.Providers.Nvidia.APIKey != "" {
+				apiKey = cfg.Providers.Nvidia.APIKey
+				apiBase = cfg.Providers.Nvidia.APIBase
+				if apiBase == "" {
+					apiBase = "https://integrate.api.nvidia.com/v1"
+				}
+			}
 		case "github_copilot", "copilot":
 			if cfg.Providers.GitHubCopilot.APIBase != "" {
 				apiBase = cfg.Providers.GitHubCopilot.APIBase
@@ -345,6 +354,13 @@ func CreateProvider(cfg *config.Config) (LLMProvider, error) {
 			proxy = cfg.Providers.Moonshot.Proxy
 			if apiBase == "" {
 				apiBase = "https://api.moonshot.cn/v1"
+			}
+		case (strings.Contains(lowerModel, "kimi") || strings.Contains(lowerModel, "k2")) && cfg.Providers.Nvidia.APIKey != "":
+			apiKey = cfg.Providers.Nvidia.APIKey
+			apiBase = cfg.Providers.Nvidia.APIBase
+			proxy = cfg.Providers.Nvidia.Proxy
+			if apiBase == "" {
+				apiBase = "https://integrate.api.nvidia.com/v1"
 			}
 
 		case strings.HasPrefix(model, "openrouter/") || strings.HasPrefix(model, "anthropic/") || strings.HasPrefix(model, "openai/") || strings.HasPrefix(model, "meta-llama/") || strings.HasPrefix(model, "deepseek/") || strings.HasPrefix(model, "google/"):

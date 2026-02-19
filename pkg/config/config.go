@@ -426,6 +426,9 @@ func (c *Config) GetAPIKey() string {
 	if c.Providers.ShengSuanYun.APIKey != "" {
 		return c.Providers.ShengSuanYun.APIKey
 	}
+	if c.Providers.Nvidia.APIKey != "" {
+		return c.Providers.Nvidia.APIKey
+	}
 	return ""
 }
 
@@ -443,6 +446,13 @@ func (c *Config) GetAPIBase() string {
 	}
 	if c.Providers.VLLM.APIKey != "" && c.Providers.VLLM.APIBase != "" {
 		return c.Providers.VLLM.APIBase
+	}
+
+	if c.Providers.Nvidia.APIKey != "" {
+		if c.Providers.Nvidia.APIBase != "" {
+			return c.Providers.Nvidia.APIBase
+		}
+		return "https://integrate.api.nvidia.com/v1"
 	}
 	return ""
 }
