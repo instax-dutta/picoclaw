@@ -526,6 +526,15 @@ func (c *Config) GetAPIKey() string {
 	if c.Providers.Nvidia.APIKey != "" {
 		return c.Providers.Nvidia.APIKey
 	}
+	if c.Providers.Ollama.APIKey != "" {
+		return c.Providers.Ollama.APIKey
+	}
+	if c.Providers.Moonshot.APIKey != "" {
+		return c.Providers.Moonshot.APIKey
+	}
+	if c.Providers.DeepSeek.APIKey != "" {
+		return c.Providers.DeepSeek.APIKey
+	}
 	return ""
 }
 
@@ -550,6 +559,15 @@ func (c *Config) GetAPIBase() string {
 			return c.Providers.Nvidia.APIBase
 		}
 		return "https://integrate.api.nvidia.com/v1"
+	}
+	if c.Providers.Ollama.APIKey != "" {
+		return c.Providers.Ollama.APIBase
+	}
+	if c.Providers.Moonshot.APIKey != "" {
+		return c.Providers.Moonshot.APIBase
+	}
+	if c.Providers.DeepSeek.APIKey != "" {
+		return c.Providers.DeepSeek.APIBase
 	}
 	return ""
 }
