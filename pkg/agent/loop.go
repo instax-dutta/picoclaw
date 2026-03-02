@@ -12,6 +12,7 @@ import (
 	"errors"
 	"fmt"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"sync"
 	"sync/atomic"
@@ -518,7 +519,7 @@ func (al *AgentLoop) runAgentLoop(ctx context.Context, agent *AgentInstance, opt
 	agent.Sessions.AddMessage(opts.SessionKey, "user", opts.UserMessage)
 
 	// 4. Run LLM iteration loop
-	finalContent, iteration, err := al.runLLMIteration(ctx, agent, messages, opts)
+	finalContent, iteration, executedTools, err := al.runLLMIteration(ctx, agent, messages, opts)
 	if err != nil {
 		return "", err
 	}
@@ -528,7 +529,7 @@ func (al *AgentLoop) runAgentLoop(ctx context.Context, agent *AgentInstance, opt
 
 	// 5. Handle empty response
 	if finalContent == "" {
-		finalContent = opts.DefaultResponse
+		finalContent = generateTLDR(opts.UserMessage, executedTools, iteration)
 	}
 
 	// 6. Save final assistant message to session
@@ -621,9 +622,10 @@ func (al *AgentLoop) runLLMIteration(
 	agent *AgentInstance,
 	messages []providers.Message,
 	opts processOptions,
-) (string, int, error) {
+) (string, int, []string, error) {
 	iteration := 0
 	var finalContent string
+	executedTools := []string{}
 
 	for iteration < agent.MaxIterations {
 		iteration++
@@ -807,6 +809,9 @@ func (al *AgentLoop) runLLMIteration(
 				"count":     len(normalizedToolCalls),
 				"iteration": iteration,
 			})
+
+		// Track executed tools for TLDR generation
+		executedTools = append(executedTools, toolNames...)
 
 		// Build assistant message with tool calls
 		assistantMsg := providers.Message{
@@ -1349,4 +1354,40 @@ func extractParentPeer(msg bus.InboundMessage) *routing.RoutePeer {
 		return nil
 	}
 	return &routing.RoutePeer{Kind: parentKind, ID: parentID}
+}
+
+// generateTLDR generates a summary when the LLM returns an empty response.
+// It provides context about what was processed instead of a generic message.
+func generateTLDR(userMessage string, executedTools []string, iteration int) string {
+	var sb strings.Builder
+
+	if len(executedTools) > 0 {
+		sb.WriteString("Processed ")
+		sb.WriteString(strconv.Itoa(len(executedTools)))
+		sb.WriteString(" tool(s): ")
+		sb.WriteString(strings.Join(executedTools, ", "))
+		sb.WriteString(".")
+	} else {
+		sb.WriteString("Processed your request")
+	}
+
+	sb.WriteString(" (")
+	sb.WriteString(strconv.Itoa(iteration))
+	sb.WriteString(" iteration")
+	if iteration > 1 {
+		sb.WriteString("s")
+	}
+	sb.WriteString(")")
+
+	if len(userMessage) > 50 {
+		sb.WriteString(". Message: \"")
+		sb.WriteString(utils.Truncate(userMessage, 50))
+		sb.WriteString("...\"")
+	} else if userMessage != "" {
+		sb.WriteString(". Message: \"")
+		sb.WriteString(userMessage)
+		sb.WriteString("\"")
+	}
+
+	return sb.String()
 }
