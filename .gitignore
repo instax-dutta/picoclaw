@@ -11,7 +11,7 @@ build/
 /picoclaw
 /picoclaw-test
 cmd/**/workspace
-
+.agent/
 # Picoclaw specific
 
 # PicoClaw
@@ -25,6 +25,28 @@ build/
 # Secrets & Config (keep templates, ignore actual secrets)
 .env
 config/config.json
+
+# ============================================================
+# CREDENTIALS & LOCAL CONFIGS - NEVER COMMIT THESE
+# ============================================================
+# Local runtime configs with API keys, tokens, etc.
+pi_config.json
+*_config.json
+*.local.json
+
+# ============================================================
+# LARGE ARTIFACTS & DEPLOYMENT FILES - DO NOT TRACK
+# ============================================================
+# Go SDK download
+go_sdk/
+go.zip
+
+# Deployment archives and scripts
+*.tar.gz
+*.tar.xz
+*.zip
+setup.sh
+build/setup*.sh
 
 # Test
 coverage.txt
