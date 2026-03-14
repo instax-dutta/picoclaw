@@ -7,9 +7,10 @@ require (
 	github.com/anthropics/anthropic-sdk-go v1.22.1
 	github.com/bwmarrin/discordgo v0.29.0
 	github.com/caarlos0/env/v11 v11.3.1
-	github.com/chzyer/readline v1.5.1
 	github.com/ergochat/irc-go v0.5.0
+	github.com/ergochat/readline v0.1.3
 	github.com/gdamore/tcell/v2 v2.13.8
+	github.com/gomarkdown/markdown v0.0.0-20260217112301-37c66b85d6ab
 	github.com/google/uuid v1.6.0
 	github.com/gorilla/websocket v1.5.3
 	github.com/h2non/filetype v1.1.3
@@ -20,6 +21,7 @@ require (
 	github.com/open-dingtalk/dingtalk-stream-sdk-go v0.9.1
 	github.com/openai/openai-go/v3 v3.22.0
 	github.com/rivo/tview v0.42.0
+	github.com/rs/zerolog v1.34.0
 	github.com/slack-go/slack v0.17.3
 	github.com/spf13/cobra v1.10.2
 	github.com/stretchr/testify v1.11.1
@@ -28,6 +30,7 @@ require (
 	golang.org/x/oauth2 v0.35.0
 	golang.org/x/time v0.14.0
 	google.golang.org/protobuf v1.36.11
+	gopkg.in/yaml.v3 v3.0.1
 	maunium.net/go/mautrix v0.26.3
 	modernc.org/sqlite v1.46.1
 )
@@ -49,7 +52,6 @@ require (
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/remyoudompheng/bigfft v0.0.0-20230129092748-24d4a6f8daec // indirect
 	github.com/rivo/uniseg v0.4.7 // indirect
-	github.com/rs/zerolog v1.34.0 // indirect
 	github.com/segmentio/asm v1.1.3 // indirect
 	github.com/segmentio/encoding v0.5.3 // indirect
 	github.com/spf13/pflag v1.0.10 // indirect
@@ -59,7 +61,6 @@ require (
 	golang.org/x/exp v0.0.0-20260212183809-81e46e3db34a // indirect
 	golang.org/x/term v0.40.0 // indirect
 	golang.org/x/text v0.34.0 // indirect
-	gopkg.in/yaml.v3 v3.0.1 // indirect
 	modernc.org/libc v1.67.6 // indirect
 	modernc.org/mathutil v1.7.1 // indirect
 	modernc.org/memory v1.11.0 // indirect
